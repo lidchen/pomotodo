@@ -1,0 +1,51 @@
+package main
+
+/*
+| Case                 | Status | Code                |
+| -------------------- | ------ | ------------------- |
+| invalid input        | 400    | INVALID_INPUT       |
+| unauthorized         | 401    | UNAUTHORIZED        |
+| forbidden            | 403    | FORBIDDEN           |
+| not found            | 404    | NOT_FOUND           |
+| conflict (duplicate) 	| 409    | USER_ALREADY_EXISTS |
+*/
+
+type AppError struct {
+	Code       string
+	Message    string
+	Err        error
+	HTTPStatus int
+}
+
+func ErrConflict(code, message string) *AppError {
+	return &AppError{
+		Code:       code,
+		Message:    message,
+		HTTPStatus: 409,
+	}
+}
+
+func ErrNotFound(code, message string) *AppError {
+	return &AppError{
+		Code:       code,
+		Message:    message,
+		HTTPStatus: 404,
+	}
+}
+
+func ErrBadRequest(message string) *AppError {
+	return &AppError{
+		Code:       "INVALID_INPUT",
+		Message:    message,
+		HTTPStatus: 400,
+	}
+}
+
+func ErrInternal(err error) *AppError {
+	return &AppError{
+		Code:       "INTERNAL_ERROR",
+		Message:    "internal server error",
+		Err:        err,
+		HTTPStatus: 500,
+	}
+}

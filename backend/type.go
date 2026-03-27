@@ -1,5 +1,7 @@
 package main
 
+import "time"
+
 type User struct {
 	ID       int
 	Username string
@@ -8,7 +10,8 @@ type User struct {
 
 type Todo struct {
 	ID        int
-	UserID    int
 	Title     string
 	Completed bool
+	PomoCount int
+	CreatedAt time.Time
 }
