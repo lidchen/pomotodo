@@ -2,27 +2,37 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
+	"net/http"
+	"os"
 
 	_ "github.com/lib/pq"
 )
 
 func main() {
-	connStr := "host=localhost port=5433 user=admin password=admin dbname=pomotodo sslmode=disable"
+	connStr := os.Getenv("POMOTODO_DSN")
+	if connStr == "" {
+		connStr = "host=localhost port=5433 user=admin password=admin dbname=pomotodo sslmode=disable"
+	}
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		panic(err)
+		log.Fatalf("open db: %v", err)
 	}
 	defer db.Close()
 
 	if err := db.Ping(); err != nil {
-		panic(err)
+		log.Fatalf("ping db: %v", err)
 	}
 
-	if err := CreateUser(db, "test1", "test"); err != nil {
-		panic(err)
+	api := NewAPI(db)
+	addr := os.Getenv("POMOTODO_ADDR")
+	if addr == "" {
+		addr = ":8080"
 	}
 
-	fmt.Println("connected")
+	log.Printf("pomotodo backend listening on %s", addr)
+	if err := http.ListenAndServe(addr, api.Routes()); err != nil {
+		log.Fatalf("server: %v", err)
+	}
 }
