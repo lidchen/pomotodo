@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	connStr := "host=localhost port=5432 user=admin password=admin dbname=pomotodo sslmode=disable"
+	connStr := "host=localhost port=5433 user=admin password=admin dbname=pomotodo sslmode=disable"
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
