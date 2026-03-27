@@ -12,7 +12,7 @@ func Login(db *sql.DB, username, password string) (*User, *AppError) {
 
 	// TODO: implement hash password
 	// err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-	if user.Password != username {
+	if user.Password != password {
 		return nil, ErrUnAuthorized("INVALID_CREDENTIALS", "invalid password")
 	}
 

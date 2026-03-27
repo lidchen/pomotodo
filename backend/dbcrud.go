@@ -17,8 +17,8 @@ func CreateUser(db *sql.DB, username, password_hash string) *AppError {
 			case "23505": // unique_violation
 				return ErrConflict("USER_ALREADY_EXISTS", "user already exists")
 			}
-			return ErrInternal(err)
 		}
+		return ErrInternal(err)
 	}
 	return nil
 }
@@ -30,6 +30,9 @@ func GetUserByUsername(db *sql.DB, username string) (*User, *AppError) {
 	var u User
 	err := row.Scan(&u.ID, &u.Username, &u.Password)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrNotFound("NOT_FOUND", "user not found")
+		}
 		if pgErr, ok := err.(*pq.Error); ok {
 			switch pgErr.Code {
 			case "42703": // undefined_column
@@ -42,7 +45,7 @@ func GetUserByUsername(db *sql.DB, username string) (*User, *AppError) {
 }
 
 func GetTodosByUser(db *sql.DB, userid int) ([]Todo, *AppError) {
-	rows, err := db.Query("SELECT id, title, completed, pomo_count created_at FROM todos WHERE user_id=$1", userid)
+	rows, err := db.Query("SELECT id, title, completed, pomo_count, created_at FROM todos WHERE userid=$1", userid)
 	if err != nil {
 		return nil, ErrInternal(err)
 	}
@@ -66,7 +69,8 @@ func ToogleTodoStatus(db *sql.DB, userid, id int) (*Todo, *AppError) {
 		return nil, apperr
 	}
 
-	_, err := db.Exec("UPDATE todos SET completed=$1 where id=$2 AND userid=$3", t.Completed, id, userid)
+	newCompleted := !t.Completed
+	_, err := db.Exec("UPDATE todos SET completed=$1 where id=$2 AND userid=$3", newCompleted, id, userid)
 	if err != nil {
 		if pgErr, ok := err.(*pq.Error); ok {
 			switch pgErr.Code {
@@ -76,6 +80,7 @@ func ToogleTodoStatus(db *sql.DB, userid, id int) (*Todo, *AppError) {
 		}
 		return nil, ErrInternal(err)
 	}
+	t.Completed = newCompleted
 	return t, nil
 }
 
@@ -97,7 +102,7 @@ func CreateTodo(db *sql.DB, userid, title string) (*Todo, *AppError) {
 
 func DeleteTodo(db *sql.DB, userid, id int) *AppError {
 	_, err := db.Exec(
-		"DELETE FROM todos WHERE userid=$1, id=$2",
+		"DELETE FROM todos WHERE userid=$1 AND id=$2",
 		userid, id,
 	)
 	if err != nil {
@@ -123,7 +128,7 @@ func IncrementPomo(db *sql.DB, userid, id int) (*Todo, *AppError) {
 
 func getTodoById(db *sql.DB, userid, id int) (*Todo, *AppError) {
 	row := db.QueryRow(
-		"SELECT id, title, completed, pomo_count, create_at FROM todos WHERE userid=$1, id=$2",
+		"SELECT id, title, completed, pomo_count, created_at FROM todos WHERE userid=$1 AND id=$2",
 		userid, id,
 	)
 	var t Todo

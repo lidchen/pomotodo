@@ -123,7 +123,7 @@ func TestGetTodosByUserSuccess(t *testing.T) {
 	}
 	defer db.Close()
 
-	query := regexp.QuoteMeta("SELECT id, title, completed, pomo_count created_at FROM todos WHERE user_id=$1")
+	query := regexp.QuoteMeta("SELECT id, title, completed, pomo_count, created_at FROM todos WHERE userid=$1")
 	now := time.Date(2026, 3, 27, 12, 0, 0, 0, time.UTC)
 	rows := sqlmock.NewRows([]string{"id", "title", "completed", "pomo_count", "created_at"}).
 		AddRow(1, "first", false, 0, now).
@@ -182,7 +182,7 @@ func TestDeleteTodoSuccess(t *testing.T) {
 	}
 	defer db.Close()
 
-	query := regexp.QuoteMeta("DELETE FROM todos WHERE userid=$1, id=$2")
+	query := regexp.QuoteMeta("DELETE FROM todos WHERE userid=$1 AND id=$2")
 	mock.ExpectExec(query).WithArgs(9, 3).WillReturnResult(sqlmock.NewResult(0, 1))
 
 	appErr := DeleteTodo(db, 9, 3)
@@ -202,14 +202,14 @@ func TestToggleTodoStatusSuccess(t *testing.T) {
 	}
 	defer db.Close()
 
-	getQuery := regexp.QuoteMeta("SELECT id, title, completed, pomo_count, create_at FROM todos WHERE userid=$1, id=$2")
+	getQuery := regexp.QuoteMeta("SELECT id, title, completed, pomo_count, created_at FROM todos WHERE userid=$1 AND id=$2")
 	now := time.Date(2026, 3, 27, 13, 0, 0, 0, time.UTC)
-	getRows := sqlmock.NewRows([]string{"id", "title", "completed", "pomo_count", "create_at"}).
+	getRows := sqlmock.NewRows([]string{"id", "title", "completed", "pomo_count", "created_at"}).
 		AddRow(3, "task", false, 1, now)
 	mock.ExpectQuery(getQuery).WithArgs(9, 3).WillReturnRows(getRows)
 
 	updateQuery := regexp.QuoteMeta("UPDATE todos SET completed=$1 where id=$2 AND userid=$3")
-	mock.ExpectExec(updateQuery).WithArgs(false, 3, 9).WillReturnResult(sqlmock.NewResult(0, 1))
+	mock.ExpectExec(updateQuery).WithArgs(true, 3, 9).WillReturnResult(sqlmock.NewResult(0, 1))
 
 	todo, appErr := ToogleTodoStatus(db, 9, 3)
 	if appErr != nil {
