@@ -106,6 +106,21 @@ func DeleteTodo(db *sql.DB, userid, id int) *AppError {
 	return nil
 }
 
+func IncrementPomo(db *sql.DB, userid, id int) (*Todo, *AppError) {
+	var t Todo
+
+	err := db.QueryRow(
+		"UPDATE todos SET pomo_count=pomo_count+1 WHERE userid=$1 AND id=$2 RETURNING id, title, completed, pomo_count, created_at",
+		userid, id,
+	).Scan(&t.ID, &t.Title, &t.Completed, &t.PomoCount, &t.CreatedAt)
+
+	// TODO: Check err type (user not exist / cant create...)
+	if err != nil {
+		return nil, ErrInternal(err)
+	}
+	return &t, nil
+}
+
 func getTodoById(db *sql.DB, userid, id int) (*Todo, *AppError) {
 	row := db.QueryRow(
 		"SELECT id, title, completed, pomo_count, create_at FROM todos WHERE userid=$1, id=$2",

@@ -252,3 +252,61 @@ func TestCreateTodoInternalError(t *testing.T) {
 		t.Fatalf("unmet sql expectations: %v", err)
 	}
 }
+
+func TestIncrementPomoSuccess(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("failed to create sqlmock: %v", err)
+	}
+	defer db.Close()
+
+	query := regexp.QuoteMeta("UPDATE todos SET pomo_count=pomo_count+1 WHERE userid=$1 AND id=$2 RETURNING id, title, completed, pomo_count, created_at")
+	now := time.Date(2026, 3, 27, 14, 0, 0, 0, time.UTC)
+	rows := sqlmock.NewRows([]string{"id", "title", "completed", "pomo_count", "created_at"}).
+		AddRow(5, "study", false, 4, now)
+	mock.ExpectQuery(query).WithArgs(9, 5).WillReturnRows(rows)
+
+	todo, appErr := IncrementPomo(db, 9, 5)
+	if appErr != nil {
+		t.Fatalf("expected nil error, got: %+v", appErr)
+	}
+	if todo == nil {
+		t.Fatal("expected todo, got nil")
+	}
+	if todo.ID != 5 || todo.PomoCount != 4 || todo.Title != "study" {
+		t.Fatalf("unexpected todo: %+v", *todo)
+	}
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("unmet sql expectations: %v", err)
+	}
+}
+
+func TestIncrementPomoInternalError(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("failed to create sqlmock: %v", err)
+	}
+	defer db.Close()
+
+	query := regexp.QuoteMeta("UPDATE todos SET pomo_count=pomo_count+1 WHERE userid=$1 AND id=$2 RETURNING id, title, completed, pomo_count, created_at")
+	mock.ExpectQuery(query).WithArgs(9, 5).WillReturnError(fmt.Errorf("update failed"))
+
+	todo, appErr := IncrementPomo(db, 9, 5)
+	if todo != nil {
+		t.Fatalf("expected nil todo, got %+v", *todo)
+	}
+	if appErr == nil {
+		t.Fatal("expected internal error, got nil")
+	}
+	if appErr.Code != "INTERNAL_ERROR" {
+		t.Fatalf("expected INTERNAL_ERROR, got %s", appErr.Code)
+	}
+	if appErr.HTTPStatus != 500 {
+		t.Fatalf("expected 500, got %d", appErr.HTTPStatus)
+	}
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("unmet sql expectations: %v", err)
+	}
+}
