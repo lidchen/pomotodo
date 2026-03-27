@@ -5,6 +5,7 @@ package main
 | -------------------- | ------ | ------------------- |
 | invalid input        | 400    | INVALID_INPUT       |
 | unauthorized         | 401    | UNAUTHORIZED        |
+| invalid password     | 401    | INVALID_CREDENTIALS |
 | forbidden            | 403    | FORBIDDEN           |
 | not found            | 404    | NOT_FOUND           |
 | conflict (duplicate) 	| 409    | USER_ALREADY_EXISTS |
@@ -15,6 +16,14 @@ type AppError struct {
 	Message    string
 	Err        error
 	HTTPStatus int
+}
+
+func ErrUnAuthorized(code, message string) *AppError {
+	return &AppError{
+		Code:       code,
+		Message:    message,
+		HTTPStatus: 401,
+	}
 }
 
 func ErrConflict(code, message string) *AppError {
