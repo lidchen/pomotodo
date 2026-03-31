@@ -53,7 +53,7 @@ func ErrBadRequest(message string) *AppError {
 func ErrInternal(err error) *AppError {
 	return &AppError{
 		Code:       "INTERNAL_ERROR",
-		Message:    "internal server error",
+		Message:    "internal server error: " + err.Error(),
 		Err:        err,
 		HTTPStatus: 500,
 	}

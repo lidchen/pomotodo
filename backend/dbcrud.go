@@ -45,7 +45,7 @@ func GetUserByUsername(db *sql.DB, username string) (*User, *AppError) {
 }
 
 func GetTodosByUser(db *sql.DB, userid int) ([]Todo, *AppError) {
-	rows, err := db.Query("SELECT id, title, completed, pomo_count, created_at FROM todos WHERE userid=$1", userid)
+	rows, err := db.Query("SELECT id, title, completed, pomo_count, created_at FROM todos WHERE user_id=$1", userid)
 	if err != nil {
 		return nil, ErrInternal(err)
 	}
@@ -70,7 +70,7 @@ func ToogleTodoStatus(db *sql.DB, userid, id int) (*Todo, *AppError) {
 	}
 
 	newCompleted := !t.Completed
-	_, err := db.Exec("UPDATE todos SET completed=$1 where id=$2 AND userid=$3", newCompleted, id, userid)
+	_, err := db.Exec("UPDATE todos SET completed=$1 where id=$2 AND user_id=$3", newCompleted, id, userid)
 	if err != nil {
 		if pgErr, ok := err.(*pq.Error); ok {
 			switch pgErr.Code {
@@ -88,7 +88,7 @@ func CreateTodo(db *sql.DB, userid, title string) (*Todo, *AppError) {
 	var t Todo
 
 	err := db.QueryRow(
-		"INSERT INTO todos (userid, title) VALUES ($1, $2) RETURNING id, title, completed, pomo_count, created_at",
+		"INSERT INTO todos (user_id, title) VALUES ($1, $2) RETURNING id, title, completed, pomo_count, created_at",
 		userid, title,
 	).Scan(&t.ID, &t.Title, &t.Completed, &t.PomoCount, &t.CreatedAt)
 
@@ -102,7 +102,7 @@ func CreateTodo(db *sql.DB, userid, title string) (*Todo, *AppError) {
 
 func DeleteTodo(db *sql.DB, userid, id int) *AppError {
 	_, err := db.Exec(
-		"DELETE FROM todos WHERE userid=$1 AND id=$2",
+		"DELETE FROM todos WHERE user_id=$1 AND id=$2",
 		userid, id,
 	)
 	if err != nil {
@@ -115,7 +115,7 @@ func IncrementPomo(db *sql.DB, userid, id int) (*Todo, *AppError) {
 	var t Todo
 
 	err := db.QueryRow(
-		"UPDATE todos SET pomo_count=pomo_count+1 WHERE userid=$1 AND id=$2 RETURNING id, title, completed, pomo_count, created_at",
+		"UPDATE todos SET pomo_count=pomo_count+1 WHERE user_id=$1 AND id=$2 RETURNING id, title, completed, pomo_count, created_at",
 		userid, id,
 	).Scan(&t.ID, &t.Title, &t.Completed, &t.PomoCount, &t.CreatedAt)
 
@@ -128,7 +128,7 @@ func IncrementPomo(db *sql.DB, userid, id int) (*Todo, *AppError) {
 
 func getTodoById(db *sql.DB, userid, id int) (*Todo, *AppError) {
 	row := db.QueryRow(
-		"SELECT id, title, completed, pomo_count, created_at FROM todos WHERE userid=$1 AND id=$2",
+		"SELECT id, title, completed, pomo_count, created_at FROM todos WHERE user_id=$1 AND id=$2",
 		userid, id,
 	)
 	var t Todo

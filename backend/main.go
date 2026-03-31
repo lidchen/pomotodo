@@ -12,7 +12,7 @@ import (
 func main() {
 	connStr := os.Getenv("POMOTODO_DSN")
 	if connStr == "" {
-		connStr = "host=localhost port=5433 user=admin password=admin dbname=pomotodo sslmode=disable"
+		connStr = "host=localhost port=5432 user=admin password=admin dbname=pomotodo sslmode=disable"
 	}
 
 	db, err := sql.Open("postgres", connStr)
@@ -28,7 +28,7 @@ func main() {
 	api := NewAPI(db)
 	addr := os.Getenv("POMOTODO_ADDR")
 	if addr == "" {
-		addr = ":8080"
+		addr = ":3002"
 	}
 
 	log.Printf("pomotodo backend listening on %s", addr)
