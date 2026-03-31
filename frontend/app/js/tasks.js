@@ -81,6 +81,12 @@ class TaskManager {
             if (data.success) {
                 const updatedTask = data.tasks[0];
                 this.tasks = this.tasks.map(t => t.id === taskId ? updatedTask : t);
+                
+                if (updatedTask.completed && this.currentTaskId === taskId) {
+                    this.currentTaskId = null;
+                    this.updateCurrentTaskDisplay();
+                }
+                
                 this.renderTasks();
                 return true;
             } else {
@@ -94,6 +100,12 @@ class TaskManager {
     }
 
     async incrementTomatoes(taskId) {
+        const task = this.tasks.find(t => t.id === taskId);
+        if (task && task.completed) {
+            errorHandler.showAlert('该任务已完成，无法增加番茄数。');
+            return false;
+        }
+
         try {
             const data = await todoService.incrementTomatoes(this.userId, taskId);
             if (data.success) {
@@ -112,6 +124,11 @@ class TaskManager {
     }
 
     selectTask(taskId) {
+        const task = this.tasks.find(t => t.id === taskId);
+        if (task && task.completed) {
+            errorHandler.showAlert('该任务已完成，无法选择。请选择未完成的任务或创建新任务。');
+            return;
+        }
         this.currentTaskId = taskId;
         this.updateCurrentTaskDisplay();
         this.renderTasks();
@@ -160,9 +177,10 @@ class TaskManager {
     createTaskElement(task) {
         const isSelected = task.id === this.currentTaskId;
         const statusClass = task.completed ? 'completed' : (isSelected ? 'in-progress' : 'not-started');
+        const cursorClass = task.completed ? 'cursor-not-allowed' : 'cursor-pointer';
         
         return `
-            <div class="task-item ${statusClass} bg-gray-50 rounded-xl p-4 cursor-pointer" data-task-id="${task.id}">
+            <div class="task-item ${statusClass} bg-gray-50 rounded-xl p-4 ${cursorClass}" data-task-id="${task.id}">
                 <div class="flex items-start gap-3">
                     <button class="task-checkbox flex-shrink-0 w-6 h-6 rounded-full border-2 ${task.completed ? 'bg-green-500 border-green-500' : 'border-gray-300 hover:border-amber-500'} flex items-center justify-center transition-all duration-300" data-task-id="${task.id}">
                         ${task.completed ? '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' : ''}
@@ -175,6 +193,7 @@ class TaskManager {
                             <span class="text-sm text-gray-400 flex items-center gap-1">
                                 🍅 ${task.pomo_count}
                             </span>
+                            ${task.completed ? '<span class="text-sm text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded">已完成</span>' : ''}
                             <button class="task-delete-btn text-sm text-gray-400 hover:text-red-500 transition-colors duration-300" data-task-id="${task.id}">
                                 删除
                             </button>
@@ -192,7 +211,11 @@ class TaskManager {
         taskElement.addEventListener('click', (e) => {
             if (!e.target.closest('.task-checkbox') && 
                 !e.target.closest('.task-delete-btn')) {
-                this.selectTask(task.id);
+                if (task.completed) {
+                    errorHandler.showAlert('该任务已完成，无法选择。请选择未完成的任务或创建新任务。');
+                } else {
+                    this.selectTask(task.id);
+                }
             }
         });
 
