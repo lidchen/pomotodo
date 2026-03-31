@@ -1,0 +1,206 @@
+.font-cursive {
+    font-family: 'ZCOOL KuaiLe', cursive;
+}
+
+.font-artistic {
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+}
+
+.font-title {
+    font-family: 'Ma Shan Zheng', cursive;
+}
+
+* {
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+}
+
+body.focus-mode {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fed7aa 100%);
+}
+
+body.break-mode {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+}
+
+body.reminder-mode {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
+    animation: pulse-bg 1s ease-in-out infinite;
+}
+
+@keyframes pulse-bg {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.task-item {
+    transition: all 0.3s ease;
+}
+
+.task-item:hover {
+    transform: translateX(4px);
+}
+
+.task-item.not-started {
+    border-left: 4px solid #e5e7eb;
+}
+
+.task-item.in-progress {
+    border-left: 4px solid #f59e0b;
+    background: linear-gradient(90deg, #fef3c7 0%, transparent 100%);
+}
+
+.task-item.completed {
+    border-left: 4px solid #10b981;
+    opacity: 0.8;
+}
+
+.task-item.completed .task-title {
+    color: #888888;
+    text-decoration: line-through;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+#timer {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'ZCOOL KuaiLe', cursive;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+#modal-overlay.show {
+    display: flex;
+}
+
+#modal-overlay.show #modal {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.task-title-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    resize: none;
+    overflow: hidden;
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+}
+
+.task-title-input:focus {
+    background: #f9fafb;
+    border-radius: 4px;
+}
+
+.phase-label {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    display: inline-block;
+    font-weight: 500;
+}
+
+.phase-label.focus {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+}
+
+.phase-label.break {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    color: #166534;
+}
+
+.checkmark {
+    color: #10b981;
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.auth-card {
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+}
+
+.auth-input {
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+}
+
+.auth-input:focus {
+    border-color: #f59e0b;
+}
+
+.error-message {
+    display: block;
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.error-alert {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-btn:disabled {
+    box-shadow: none;
+}
+
+.auth-btn .animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.task-item.dragging {
+    opacity: 0.5;
+    transform: scale(1.02);
+    z-index: 1000;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.task-item.drag-over {
+    border-top: 3px solid #f59e0b;
+    background: linear-gradient(180deg, #fef3c7 0%, transparent 100%);
+}
+
+.drag-handle {
+    user-select: none;
+    touch-action: none;
+}
+
+.drag-handle svg {
+    pointer-events: none;
+}
