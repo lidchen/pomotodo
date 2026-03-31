@@ -70,7 +70,7 @@ class AuthManager {
         loginBtnLoading.classList.remove('hidden');
         
         try {
-            const data = await loginService.handleLogin(username, password);
+            const data = await authService.login(username, password);
             
             if (data.success) {
                 this.saveSession({ id: data.id, username: data.username });
@@ -132,7 +132,7 @@ class AuthManager {
         registerBtnLoading.classList.remove('hidden');
         
         try {
-            const data = await registerService.handleRegister(username, password);
+            const data = await authService.register(username, password);
             
             if (data.success) {
                 this.saveSession({ id: data.id, username: data.username });

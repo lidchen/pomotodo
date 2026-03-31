@@ -25,24 +25,19 @@ class TaskManager {
 
     async loadTasks() {
         try {
-            const data = await loadTasksService.loadTasks(this.userId);
-            if (data.success) {
-                this.tasks = this.sortTasks(data.tasks || []);
-                this.renderTasks();
-                return this.tasks;
-            } else {
-                errorHandler.showAlert(data.message || '加载任务失败');
-                return [];
-            }
+            const data = await todoService.loadTasks(this.userId);
+            this.tasks = this.sortTasks(data.tasks || []);
+            this.renderTasks();
+            return this.tasks;
         } catch (error) {
-            errorHandler.showAlert(error.message);
+            errorHandler.showAlert(error.message || '加载任务失败');
             return [];
         }
     }
 
     async createTask(title) {
         try {
-            const data = await taskService.createTask(this.userId, title);
+            const data = await todoService.createTask(this.userId, title);
             if (data.success) {
                 const newTask = data.tasks[0];
                 this.tasks.push(newTask);
@@ -61,7 +56,7 @@ class TaskManager {
 
     async deleteTask(taskId) {
         try {
-            const data = await deleteTaskService.deleteTask(this.userId, taskId);
+            const data = await todoService.deleteTask(this.userId, taskId);
             if (data.success) {
                 this.tasks = this.tasks.filter(t => t.id !== taskId);
                 if (this.currentTaskId === taskId) {
@@ -82,7 +77,7 @@ class TaskManager {
 
     async toggleTaskStatus(taskId) {
         try {
-            const data = await toggleTaskStatusService.toggleTaskStatus(this.userId, taskId);
+            const data = await todoService.toggleTaskStatus(this.userId, taskId);
             if (data.success) {
                 const updatedTask = data.tasks[0];
                 this.tasks = this.tasks.map(t => t.id === taskId ? updatedTask : t);
@@ -100,7 +95,7 @@ class TaskManager {
 
     async incrementTomatoes(taskId) {
         try {
-            const data = await incrementTomatoesService.incrementTomatoes(this.userId, taskId);
+            const data = await todoService.incrementTomatoes(this.userId, taskId);
             if (data.success) {
                 const updatedTask = data.tasks[0];
                 this.tasks = this.tasks.map(t => t.id === taskId ? updatedTask : t);
