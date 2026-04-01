@@ -58,6 +58,11 @@ class PomodoroApp {
             return;
         }
 
+        if (this.isFocusPhase && taskManager.getCurrentTask().completed) {
+            errorHandler.showAlert('该任务已完成，无法启动番茄钟。请选择未完成的任务或创建新任务。');
+            return;
+        }
+
         this.isRunning = true;
         this.isPaused = false;
         this.updateStartPauseButton();
