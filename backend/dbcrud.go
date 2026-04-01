@@ -122,8 +122,11 @@ func ToogleTodoStatus(db *sql.DB, userid, id int) (*Todo, *AppError) {
 	return t, nil
 }
 
-func AlterTodo(db *sql.DB, userid, id int, title string) (*Todo, *AppError) {
-	var t Todo
+func UpdateTodoTitle(db *sql.DB, userid, id int, title string) (*Todo, *AppError) {
+	t, appErr := getTodoById(db, userid, id)
+	if appErr != nil {
+		return nil, appErr
+	}
 
 	err := db.QueryRow(
 		"UPDATE todos SET title=$1 WHERE user_id=$2 AND id=$3 RETURNING id, title, completed, pomo_count, created_at",
@@ -133,7 +136,7 @@ func AlterTodo(db *sql.DB, userid, id int, title string) (*Todo, *AppError) {
 	if err != nil {
 		return nil, ErrInternal(err)
 	}
-	return &t, nil
+	return t, nil
 }
 
 func IncrementPomo(db *sql.DB, userid, id int) (*Todo, *AppError) {
