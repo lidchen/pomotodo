@@ -1,3 +1,4 @@
+# Create table
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   username VARCHAR(32) UNIQUE NOT NULL,
@@ -12,3 +13,6 @@ CREATE TABLE todos (
   pomo_count INTEGER NOT NULL DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+# Compile backend bin for server
+GOOS=linux GOARCH=amd64 go build -o pomotodo-backend .

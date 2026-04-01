@@ -63,27 +63,6 @@ func GetTodosByUser(db *sql.DB, userid int) ([]Todo, *AppError) {
 	return todos, nil
 }
 
-func ToogleTodoStatus(db *sql.DB, userid, id int) (*Todo, *AppError) {
-	t, apperr := getTodoById(db, userid, id)
-	if apperr != nil {
-		return nil, apperr
-	}
-
-	newCompleted := !t.Completed
-	_, err := db.Exec("UPDATE todos SET completed=$1 where id=$2 AND user_id=$3", newCompleted, id, userid)
-	if err != nil {
-		if pgErr, ok := err.(*pq.Error); ok {
-			switch pgErr.Code {
-			case "42703": // undefined_column
-				return nil, ErrNotFound("NOT_FOUND", "todo not found")
-			}
-		}
-		return nil, ErrInternal(err)
-	}
-	t.Completed = newCompleted
-	return t, nil
-}
-
 func CreateTodo(db *sql.DB, userid, title string) (*Todo, *AppError) {
 	var t Todo
 
@@ -109,6 +88,55 @@ func DeleteTodo(db *sql.DB, userid, id int) *AppError {
 		return ErrInternal(err)
 	}
 	return nil
+}
+
+func DeleteCompletedTodo(db *sql.DB, userid int) *AppError {
+	_, err := db.Exec(
+		"DELETE FROM todos WHERE user_id=$1 AND completed=true",
+		userid,
+	)
+	if err != nil {
+		return ErrInternal(err)
+	}
+	return nil
+}
+
+func ToogleTodoStatus(db *sql.DB, userid, id int) (*Todo, *AppError) {
+	t, apperr := getTodoById(db, userid, id)
+	if apperr != nil {
+		return nil, apperr
+	}
+
+	newCompleted := !t.Completed
+	_, err := db.Exec("UPDATE todos SET completed=$1 where id=$2 AND user_id=$3", newCompleted, id, userid)
+	if err != nil {
+		if pgErr, ok := err.(*pq.Error); ok {
+			switch pgErr.Code {
+			case "42703": // undefined_column
+				return nil, ErrNotFound("NOT_FOUND", "todo not found")
+			}
+		}
+		return nil, ErrInternal(err)
+	}
+	t.Completed = newCompleted
+	return t, nil
+}
+
+func UpdateTodoTitle(db *sql.DB, userid, id int, title string) (*Todo, *AppError) {
+	t, appErr := getTodoById(db, userid, id)
+	if appErr != nil {
+		return nil, appErr
+	}
+
+	err := db.QueryRow(
+		"UPDATE todos SET title=$1 WHERE user_id=$2 AND id=$3 RETURNING id, title, completed, pomo_count, created_at",
+		title, userid, id,
+	).Scan(&t.ID, &t.Title, &t.Completed, &t.PomoCount, &t.CreatedAt)
+
+	if err != nil {
+		return nil, ErrInternal(err)
+	}
+	return t, nil
 }
 
 func IncrementPomo(db *sql.DB, userid, id int) (*Todo, *AppError) {

@@ -249,6 +249,104 @@ class TodoService {
             };
         }
     }
+
+    async deleteCompletedTasks(userId) {
+        const userIdValidation = this.validateUserId(userId);
+        if (!userIdValidation.isValid) {
+            return {
+                success: false,
+                errorcode: 400,
+                message: userIdValidation.error,
+                tasks: []
+            };
+        }
+
+        try {
+            const url = `${this.endpoints.completedTodos}?user_id=${userId}`;
+            await this.apiClient.request(url, { method: 'DELETE' });
+
+            return {
+                success: true,
+                errorcode: 0,
+                message: '已完成任务删除成功',
+                tasks: []
+            };
+        } catch (error) {
+            return {
+                success: false,
+                errorcode: 500,
+                message: error.message || '网络连接失败，请稍后重试',
+                tasks: []
+            };
+        }
+    }
+
+    async updateTaskTitle(userId, taskId, title) {
+        const userIdValidation = this.validateUserId(userId);
+        if (!userIdValidation.isValid) {
+            return {
+                success: false,
+                errorcode: 400,
+                message: userIdValidation.error,
+                tasks: []
+            };
+        }
+
+        const taskIdValidation = this.validateTaskId(taskId);
+        if (!taskIdValidation.isValid) {
+            return {
+                success: false,
+                errorcode: 400,
+                message: taskIdValidation.error,
+                tasks: []
+            };
+        }
+
+        const titleValidation = this.validateTitle(title);
+        if (!titleValidation.isValid) {
+            return {
+                success: false,
+                errorcode: 400,
+                message: titleValidation.error,
+                tasks: []
+            };
+        }
+
+        try {
+            const result = await this.apiClient.request(this.endpoints.todoTitle, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    id: taskId,
+                    title: title.trim()
+                })
+            });
+
+            if (result.success) {
+                return {
+                    success: true,
+                    errorcode: 0,
+                    message: '任务标题更新成功',
+                    tasks: [result.data]
+                };
+            } else {
+                return {
+                    success: false,
+                    errorcode: 400,
+                    message: result.error?.message || '任务标题更新失败',
+                    tasks: []
+                };
+            }
+        } catch (error) {
+            return {
+                success: false,
+                errorcode: 500,
+                message: error.message || '网络连接失败，请稍后重试',
+                tasks: []
+            };
+        }
+    }
 }
 
 const todoService = new TodoService();

@@ -37,6 +37,12 @@ type createTodoRequest struct {
 	Title  string `json:"title"`
 }
 
+type updateTodoRequest struct {
+	UserId int    `json:"user_id"`
+	Id     int    `json:"id"`
+	Title  string `json:"title"`
+}
+
 type userResponse struct {
 	ID       int    `json:"id"`
 	Username string `json:"username"`
@@ -60,6 +66,8 @@ func (a *API) Routes() http.Handler {
 	mux.HandleFunc("PATCH /api/todos/toggle", a.handleToggleTodo)
 	mux.HandleFunc("POST /api/todos/pomo", a.handleIncrementPomo)
 	mux.HandleFunc("DELETE /api/todos", a.handleDeleteTodo)
+	mux.HandleFunc("DELETE /api/completed-todos", a.handleDeleteCompletedTodo)
+	mux.HandleFunc("PATCH /api/todos/title", a.handleUpdateTodoTitle)
 
 	return withCORS(mux)
 }
@@ -229,6 +237,42 @@ func (a *API) handleDeleteTodo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (a *API) handleDeleteCompletedTodo(w http.ResponseWriter, r *http.Request) {
+	userID, appErr := readIntQuery(r, "user_id")
+	if appErr != nil {
+		writeAppError(w, appErr)
+		return
+	}
+
+	appErr = DeleteCompletedTodo(a.db, userID)
+	if appErr != nil {
+		writeAppError(w, appErr)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (a *API) handleUpdateTodoTitle(w http.ResponseWriter, r *http.Request) {
+	var req updateTodoRequest
+	if err := decodeJSON(r, &req); err != nil {
+		writeAppError(w, ErrBadRequest(err.Error()))
+		return
+	}
+	if req.UserId <= 0 || req.Id <= 0 || req.Title == "" {
+		writeAppError(w, ErrBadRequest("user_id, id and title are required"))
+		return
+	}
+
+	todo, appErr := UpdateTodoTitle(a.db, req.UserId, req.Id, req.Title)
+	if appErr != nil {
+		writeAppError(w, appErr)
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, apiResponse{Success: true, Data: toTodoResponse(*todo)})
 }
 
 func readIntQuery(r *http.Request, key string) (int, *AppError) {
