@@ -138,7 +138,7 @@ class AuthManager {
                 this.saveSession({ id: data.id, username: data.username });
                 this.showMainApp();
             } else {
-                document.getElementById('register-error-text').textContent = data.message || '注册失败';
+                document.getElementById('register-error-text').textContent = data.message || 'Registration failed';
                 document.getElementById('register-error').classList.remove('hidden');
             }
         } catch (error) {
