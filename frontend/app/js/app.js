@@ -164,7 +164,7 @@ class PomodoroApp {
 
     updatePhaseDisplay() {
         const phaseLabel = document.getElementById('phase-label');
-        phaseLabel.textContent = this.isFocusPhase ? 'Focusing' : 'Taking a Break';
+        phaseLabel.textContent = this.isFocusPhase ? 'Focus' : 'Break';
         phaseLabel.className = `phase-label ${this.isFocusPhase ? 'focus' : 'break'}`;
     }
 
@@ -175,10 +175,10 @@ class PomodoroApp {
             btn.textContent = 'Pause';
             btn.className = 'px-8 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full font-medium transition-all duration-300';
         } else if (this.isPaused) {
-            btn.textContent = this.isFocusPhase ? 'Continue Focus' : 'Continue Break';
+            btn.textContent = this.isFocusPhase ? 'Start' : 'Start';
             btn.className = 'px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-full font-medium transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5';
         } else {
-            btn.textContent = this.isFocusPhase ? 'Start Focus' : 'Start Break';
+            btn.textContent = this.isFocusPhase ? 'Start' : 'Start';
             btn.className = 'px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-full font-medium transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5';
         }
     }
