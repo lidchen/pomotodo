@@ -6,33 +6,33 @@ class TodoService {
 
     validateUserId(userId) {
         if (userId === null || userId === undefined || typeof userId !== 'number' || !Number.isInteger(userId)) {
-            return { isValid: false, error: '用户ID必须为整数' };
+            return { isValid: false, error: 'The user ID must be an integer' };
         }
         if (userId <= 0) {
-            return { isValid: false, error: '用户ID必须为正整数' };
+            return { isValid: false, error: 'The user ID must be a positive integer' };
         }
         return { isValid: true, error: null };
     }
 
     validateTaskId(taskId) {
         if (taskId === null || taskId === undefined || typeof taskId !== 'number' || !Number.isInteger(taskId)) {
-            return { isValid: false, error: '任务ID必须为整数' };
+            return { isValid: false, error: 'The task ID must be an integer' };
         }
         if (taskId <= 0) {
-            return { isValid: false, error: '任务ID必须为正整数' };
+            return { isValid: false, error: 'The task ID must be a positive integer' };
         }
         return { isValid: true, error: null };
     }
 
     validateTitle(title) {
         if (!title || typeof title !== 'string') {
-            return { isValid: false, error: '任务标题不能为空' };
+            return { isValid: false, error: 'The title cannot be empty' };
         }
         if (title.trim().length === 0) {
-            return { isValid: false, error: '任务标题不能只包含空白字符' };
+            return { isValid: false, error: 'The title cannot contain only whitespace characters' };
         }
         if (title.length > 255) {
-            return { isValid: false, error: '任务标题不能超过255个字符' };
+            return { isValid: false, error: 'The title must not exceed 255 characters' };
         }
         return { isValid: true, error: null };
     }
@@ -48,7 +48,7 @@ class TodoService {
             if (data.success) {
                 return { errorcode: 0, tasks: data.data || [] };
             } else {
-                return Promise.reject(new Error(data.error?.message || '加载任务失败'));
+                return Promise.reject(new Error(data.error?.message || 'Failed to load tasks'));
             }
         } catch (error) {
             return Promise.reject(error);
@@ -86,14 +86,14 @@ class TodoService {
                 return {
                     success: true,
                     errorcode: 0,
-                    message: '任务创建成功',
+                    message: 'Task created successfully',
                     tasks: [data.data]
                 };
             } else {
                 return {
                     success: false,
                     errorcode: 400,
-                    message: data.error?.message || '任务创建失败',
+                    message: data.error?.message || 'Failed to create task',
                     tasks: []
                 };
             }
@@ -101,7 +101,7 @@ class TodoService {
             return {
                 success: false,
                 errorcode: 500,
-                message: error.message || '网络连接失败，请稍后重试',
+                message: error.message || 'Failed to connect to server, please ensure the backend service is running',
                 tasks: []
             };
         }
@@ -137,14 +137,14 @@ class TodoService {
             return {
                 success: true,
                 errorcode: 0,
-                message: '任务删除成功',
+                message: 'Task deleted successfully',
                 tasks: []
             };
         } catch (error) {
             return {
                 success: false,
                 errorcode: 500,
-                message: error.message || '网络连接失败，请稍后重试',
+                message: error.message || 'Failed to connect to server, please ensure the backend service is running',
                 tasks: []
             };
         }
@@ -179,14 +179,14 @@ class TodoService {
                 return {
                     success: true,
                     errorcode: 0,
-                    message: '任务状态切换成功',
+                    message: 'Task status toggled successfully',
                     tasks: [data.data]
                 };
             } else {
                 return {
                     success: false,
                     errorcode: 400,
-                    message: data.error?.message || '任务状态切换失败',
+                    message: data.error?.message || 'Failed to toggle task status',
                     tasks: []
                 };
             }
@@ -194,7 +194,7 @@ class TodoService {
             return {
                 success: false,
                 errorcode: 500,
-                message: error.message || '网络连接失败，请稍后重试',
+                message: error.message || 'Failed to connect to server, please ensure the backend service is running',
                 tasks: []
             };
         }
@@ -229,14 +229,112 @@ class TodoService {
                 return {
                     success: true,
                     errorcode: 0,
-                    message: '番茄钟计数增加成功',
+                    message: 'Pomodoro count incremented successfully',
                     tasks: [result.data]
                 };
             } else {
                 return {
                     success: false,
                     errorcode: 400,
-                    message: result.error?.message || '番茄钟计数增加失败',
+                    message: result.error?.message || 'Failed to increment pomodoro count',
+                    tasks: []
+                };
+            }
+        } catch (error) {
+            return {
+                success: false,
+                errorcode: 500,
+                message: error.message || 'Failed to connect to server, please ensure the backend service is running',
+                tasks: []
+            };
+        }
+    }
+
+    async deleteCompletedTasks(userId) {
+        const userIdValidation = this.validateUserId(userId);
+        if (!userIdValidation.isValid) {
+            return {
+                success: false,
+                errorcode: 400,
+                message: userIdValidation.error,
+                tasks: []
+            };
+        }
+
+        try {
+            const url = `${this.endpoints.completedTodos}?user_id=${userId}`;
+            await this.apiClient.request(url, { method: 'DELETE' });
+
+            return {
+                success: true,
+                errorcode: 0,
+                message: '已完成任务删除成功',
+                tasks: []
+            };
+        } catch (error) {
+            return {
+                success: false,
+                errorcode: 500,
+                message: error.message || '网络连接失败，请稍后重试',
+                tasks: []
+            };
+        }
+    }
+
+    async updateTaskTitle(userId, taskId, title) {
+        const userIdValidation = this.validateUserId(userId);
+        if (!userIdValidation.isValid) {
+            return {
+                success: false,
+                errorcode: 400,
+                message: userIdValidation.error,
+                tasks: []
+            };
+        }
+
+        const taskIdValidation = this.validateTaskId(taskId);
+        if (!taskIdValidation.isValid) {
+            return {
+                success: false,
+                errorcode: 400,
+                message: taskIdValidation.error,
+                tasks: []
+            };
+        }
+
+        const titleValidation = this.validateTitle(title);
+        if (!titleValidation.isValid) {
+            return {
+                success: false,
+                errorcode: 400,
+                message: titleValidation.error,
+                tasks: []
+            };
+        }
+
+        try {
+            const result = await this.apiClient.request(this.endpoints.todoTitle, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    id: taskId,
+                    title: title.trim()
+                })
+            });
+
+            if (result.success) {
+                return {
+                    success: true,
+                    errorcode: 0,
+                    message: '任务标题更新成功',
+                    tasks: [result.data]
+                };
+            } else {
+                return {
+                    success: false,
+                    errorcode: 400,
+                    message: result.error?.message || '任务标题更新失败',
                     tasks: []
                 };
             }

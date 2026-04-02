@@ -123,6 +123,51 @@ class TaskManager {
         }
     }
 
+    async updateTaskTitle(taskId, newTitle) {
+        try {
+            const data = await todoService.updateTaskTitle(this.userId, taskId, newTitle);
+            if (data.success) {
+                const updatedTask = data.tasks[0];
+                this.tasks = this.tasks.map(t => t.id === taskId ? updatedTask : t);
+                if (this.currentTaskId === taskId) {
+                    this.updateCurrentTaskDisplay();
+                }
+                this.renderTasks();
+                return true;
+            } else {
+                errorHandler.showAlert(data.message || '更新任务标题失败');
+                return false;
+            }
+        } catch (error) {
+            errorHandler.showAlert(error.message);
+            return false;
+        }
+    }
+
+    async deleteCompletedTasks() {
+        try {
+            const data = await todoService.deleteCompletedTasks(this.userId);
+            if (data.success) {
+                if (this.currentTaskId) {
+                    const currentTask = this.tasks.find(t => t.id === this.currentTaskId);
+                    if (currentTask && currentTask.completed) {
+                        this.currentTaskId = null;
+                        this.updateCurrentTaskDisplay();
+                    }
+                }
+                this.tasks = this.tasks.filter(t => !t.completed);
+                this.renderTasks();
+                return true;
+            } else {
+                errorHandler.showAlert(data.message || '删除已完成任务失败');
+                return false;
+            }
+        } catch (error) {
+            errorHandler.showAlert(error.message);
+            return false;
+        }
+    }
+
     selectTask(taskId) {
         const task = this.tasks.find(t => t.id === taskId);
         if (task && task.completed) {
@@ -194,6 +239,9 @@ class TaskManager {
                                 🍅 ${task.pomo_count}
                             </span>
                             ${task.completed ? '<span class="text-sm text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded">已完成</span>' : ''}
+                            <button class="task-edit-btn text-sm text-gray-400 hover:text-amber-500 transition-colors duration-300" data-task-id="${task.id}">
+                                编辑
+                            </button>
                             <button class="task-delete-btn text-sm text-gray-400 hover:text-red-500 transition-colors duration-300" data-task-id="${task.id}">
                                 删除
                             </button>
@@ -210,7 +258,8 @@ class TaskManager {
 
         taskElement.addEventListener('click', (e) => {
             if (!e.target.closest('.task-checkbox') && 
-                !e.target.closest('.task-delete-btn')) {
+                !e.target.closest('.task-delete-btn') &&
+                !e.target.closest('.task-edit-btn')) {
                 if (task.completed) {
                     errorHandler.showAlert('该任务已完成，无法选择。请选择未完成的任务或创建新任务。');
                 } else {
@@ -225,6 +274,14 @@ class TaskManager {
             this.toggleTaskStatus(task.id);
         });
 
+        const editBtn = taskElement.querySelector('.task-edit-btn');
+        if (editBtn) {
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.showEditTaskModal(task);
+            });
+        }
+
         const deleteBtn = taskElement.querySelector('.task-delete-btn');
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -232,6 +289,38 @@ class TaskManager {
                 this.deleteTask(task.id);
             });
         });
+    }
+
+    showEditTaskModal(task) {
+        const modal = document.getElementById('edit-task-modal');
+        const titleInput = document.getElementById('edit-task-title');
+        titleInput.value = task.title;
+        titleInput.dataset.taskId = task.id;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        titleInput.focus();
+    }
+
+    hideEditTaskModal() {
+        const modal = document.getElementById('edit-task-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    async handleEditTask() {
+        const titleInput = document.getElementById('edit-task-title');
+        const taskId = parseInt(titleInput.dataset.taskId);
+        const newTitle = titleInput.value.trim();
+        
+        if (!newTitle) {
+            errorHandler.showAlert('请输入任务标题');
+            return;
+        }
+        
+        const success = await this.updateTaskTitle(taskId, newTitle);
+        if (success) {
+            this.hideEditTaskModal();
+        }
     }
 
     escapeHtml(text) {

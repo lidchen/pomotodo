@@ -6,6 +6,8 @@ const API_CONFIG = {
         register: '/register',
         todos: '/todos',
         todoToggle: '/todos/toggle',
-        todoPomo: '/todos/pomo'
+        todoPomo: '/todos/pomo',
+        todoTitle: '/todos/title',
+        completedTodos: '/completed-todos'
     }
 };

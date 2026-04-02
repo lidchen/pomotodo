@@ -19,12 +19,12 @@ class ApiClient {
         this.addResponseInterceptor(
             (response) => response,
             (error) => {
-                console.error('API请求错误:', error);
+                console.error('API request error:', error);
                 if (error.name === 'AbortError') {
-                    throw new Error('请求超时，请稍后重试');
+                    throw new Error('Request timed out, please try again later');
                 }
                 if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                    throw new Error('无法连接到服务器，请确保后端服务已启动');
+                    throw new Error('Failed to connect to server, please ensure the backend service is running');
                 }
                 throw error;
             }

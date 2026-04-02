@@ -6,20 +6,20 @@ class AuthService {
 
     validateUsername(username) {
         if (!username || typeof username !== 'string') {
-            return { isValid: false, error: '用户名不能为空' };
+            return { isValid: false, error: 'The username cannot be empty' };
         }
         if (username.length < 4 || username.length > 32) {
-            return { isValid: false, error: '用户名需要4-32个字符' };
+            return { isValid: false, error: 'The username must be between 4 and 32 characters' };
         }
         return { isValid: true, error: null };
     }
 
     validatePassword(password) {
         if (!password || typeof password !== 'string') {
-            return { isValid: false, error: '密码不能为空' };
+            return { isValid: false, error: 'The password cannot be empty' };
         }
         if (password.length < 6) {
-            return { isValid: false, error: '密码至少需要6个字符' };
+            return { isValid: false, error: 'The password must be at least 6 characters' };
         }
         return { isValid: true, error: null };
     }
@@ -57,7 +57,7 @@ class AuthService {
                 return {
                     success: true,
                     errorcode: 0,
-                    message: '登录成功',
+                    message: 'Login successful',
                     id: data.data.id,
                     username: data.data.username
                 };
@@ -65,7 +65,7 @@ class AuthService {
                 return {
                     success: false,
                     errorcode: data.error?.code || 500,
-                    message: data.error?.message || '登录失败',
+                    message: data.error?.message || 'Login failed due to unknown error',
                     id: null,
                     username: null
                 };
@@ -74,7 +74,7 @@ class AuthService {
             return {
                 success: false,
                 errorcode: 500,
-                message: error.message || '网络连接失败，请稍后重试',
+                message: error.message || 'Failed to connect to server, please ensure the backend service is running',
                 id: null,
                 username: null
             };
@@ -114,7 +114,7 @@ class AuthService {
                 return {
                     success: true,
                     errorcode: 0,
-                    message: '注册成功',
+                    message: 'Registration successful',
                     id: data.data.id,
                     username: data.data.username
                 };
@@ -122,7 +122,7 @@ class AuthService {
                 return {
                     success: false,
                     errorcode: data.error?.code || 500,
-                    message: data.error?.message || '注册失败',
+                    message: data.error?.message || 'Registration failed due to unknown error',
                     id: null,
                     username: null
                 };
@@ -131,7 +131,7 @@ class AuthService {
             return {
                 success: false,
                 errorcode: 500,
-                message: error.message || '网络连接失败，请稍后重试',
+                message: error.message || 'Failed to connect to server, please ensure the backend service is running',
                 id: null,
                 username: null
             };

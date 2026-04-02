@@ -24,6 +24,9 @@ class PomodoroApp {
         const addTaskBtn = document.getElementById('add-task-btn');
         const cancelAddTask = document.getElementById('cancel-add-task');
         const confirmAddTask = document.getElementById('confirm-add-task');
+        const deleteCompletedBtn = document.getElementById('delete-completed-btn');
+        const cancelEditTask = document.getElementById('cancel-edit-task');
+        const confirmEditTask = document.getElementById('confirm-edit-task');
         const modalOverlay = document.getElementById('modal-overlay');
 
         startPauseBtn.addEventListener('click', () => this.toggleTimer());
@@ -31,6 +34,9 @@ class PomodoroApp {
         addTaskBtn.addEventListener('click', () => this.showAddTaskModal());
         cancelAddTask.addEventListener('click', () => this.hideAddTaskModal());
         confirmAddTask.addEventListener('click', () => this.handleAddTask());
+        deleteCompletedBtn.addEventListener('click', () => this.handleDeleteCompletedTasks());
+        cancelEditTask.addEventListener('click', () => taskManager.hideEditTaskModal());
+        confirmEditTask.addEventListener('click', () => taskManager.handleEditTask());
         modalOverlay.addEventListener('click', (e) => {
             if (e.target === modalOverlay) {
                 errorHandler.hideModal();
@@ -41,6 +47,24 @@ class PomodoroApp {
             if (e.target.id === 'add-task-modal') {
                 this.hideAddTaskModal();
             }
+        });
+
+        document.getElementById('edit-task-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'edit-task-modal') {
+                taskManager.hideEditTaskModal();
+            }
+        });
+    }
+
+    async handleDeleteCompletedTasks() {
+        const hasCompletedTasks = taskManager.tasks.some(t => t.completed);
+        if (!hasCompletedTasks) {
+            errorHandler.showAlert('没有已完成的任务');
+            return;
+        }
+
+        errorHandler.showConfirm('确定要删除所有已完成的任务吗？', async () => {
+            await taskManager.deleteCompletedTasks();
         });
     }
 
