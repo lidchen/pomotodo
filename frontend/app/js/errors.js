@@ -18,8 +18,8 @@ class ErrorHandler {
     }
 
     showAlert(message, type = 'info') {
-        this.showModal('提示', message, [{
-            text: '确定',
+        this.showModal('tip', message, [{
+            text: 'confirm',
             class: 'bg-amber-500 hover:bg-amber-600 text-white'
         }]);
     }
@@ -54,14 +54,14 @@ class ErrorHandler {
     }
 
     showConfirm(message, onConfirm, onCancel) {
-        this.showModal('确认', message, [
+        this.showModal('confirm', message, [
             {
-                text: '取消',
+                text: 'cancel',
                 class: 'bg-gray-200 hover:bg-gray-300 text-gray-700',
                 onClick: onCancel
             },
             {
-                text: '确定',
+                text: 'confirm',
                 class: 'bg-amber-500 hover:bg-amber-600 text-white',
                 onClick: onConfirm
             }

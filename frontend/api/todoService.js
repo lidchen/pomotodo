@@ -268,14 +268,14 @@ class TodoService {
             return {
                 success: true,
                 errorcode: 0,
-                message: '已完成任务删除成功',
+                message: 'Completed tasks deleted successfully',
                 tasks: []
             };
         } catch (error) {
             return {
                 success: false,
                 errorcode: 500,
-                message: error.message || '网络连接失败，请稍后重试',
+                message: error.message || 'Failed to connect to server, please ensure the backend service is running',
                 tasks: []
             };
         }
@@ -327,14 +327,14 @@ class TodoService {
                 return {
                     success: true,
                     errorcode: 0,
-                    message: '任务标题更新成功',
+                    message: 'Task title updated successfully',
                     tasks: [result.data]
                 };
             } else {
                 return {
                     success: false,
                     errorcode: 400,
-                    message: result.error?.message || '任务标题更新失败',
+                    message: result.error?.message || 'Failed to update task title',
                     tasks: []
                 };
             }
@@ -342,7 +342,7 @@ class TodoService {
             return {
                 success: false,
                 errorcode: 500,
-                message: error.message || '网络连接失败，请稍后重试',
+                message: error.message || 'Failed to connect to server, please ensure the backend service is running',
                 tasks: []
             };
         }

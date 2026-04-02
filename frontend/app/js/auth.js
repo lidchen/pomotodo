@@ -52,12 +52,12 @@ class AuthManager {
         this.clearAllErrors();
         
         if (!username) {
-            errorHandler.showError('login-username-error', '请输入用户名');
+            errorHandler.showError('login-username-error', 'enter one user name');
             return;
         }
         
         if (!password) {
-            errorHandler.showError('login-password-error', '请输入密码');
+            errorHandler.showError('login-password-error', 'enter your password');
             return;
         }
         
@@ -76,7 +76,7 @@ class AuthManager {
                 this.saveSession({ id: data.id, username: data.username });
                 this.showMainApp();
             } else {
-                document.getElementById('login-error-text').textContent = data.message || '登录失败';
+                document.getElementById('login-error-text').textContent = data.message || 'Login failed';
                 document.getElementById('login-error').classList.remove('hidden');
             }
         } catch (error) {
@@ -99,27 +99,27 @@ class AuthManager {
         this.clearAllErrors();
         
         if (!username) {
-            errorHandler.showError('register-username-error', '请输入用户名');
+            errorHandler.showError('register-username-error', 'please enter a user name');
             return;
         }
         
         if (username.length < 4 || username.length > 20) {
-            errorHandler.showError('register-username-error', '用户名需要4-20个字符');
+            errorHandler.showError('register-username-error', 'Username must be between 4 and 20 characters');
             return;
         }
         
         if (!password) {
-            errorHandler.showError('register-password-error', '请输入密码');
+            errorHandler.showError('register-password-error', 'please enter a password');
             return;
         }
         
         if (password.length < 6) {
-            errorHandler.showError('register-password-error', '密码至少需要6个字符');
+            errorHandler.showError('register-password-error', 'Password must be at least 6 characters');
             return;
         }
         
         if (password !== confirmPassword) {
-            errorHandler.showError('register-confirm-password-error', '两次输入的密码不一致');
+            errorHandler.showError('register-confirm-password-error', 'The passwords you entered do not match');
             return;
         }
         
@@ -163,11 +163,11 @@ class AuthManager {
         registerForm.classList.toggle('hidden');
         
         if (loginForm.classList.contains('hidden')) {
-            authSwitchText.textContent = '已有账号？';
-            authSwitchBtnText.textContent = '立即登录';
+            authSwitchText.textContent = 'Already have an account?';
+            authSwitchBtnText.textContent = 'Sign in now';
         } else {
-            authSwitchText.textContent = '还没有账号？';
-            authSwitchBtnText.textContent = '立即注册';
+            authSwitchText.textContent = 'no account yet?';
+            authSwitchBtnText.textContent = 'Sign up now';
         }
     }
 
@@ -210,8 +210,8 @@ class AuthManager {
         
         loginForm.classList.remove('hidden');
         registerForm.classList.add('hidden');
-        authSwitchText.textContent = '还没有账号？';
-        authSwitchBtnText.textContent = '立即注册';
+        authSwitchText.textContent = 'no account yet?';
+        authSwitchBtnText.textContent = 'Sign up now';
     }
 
     getUser() {

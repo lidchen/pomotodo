@@ -59,11 +59,11 @@ class PomodoroApp {
     async handleDeleteCompletedTasks() {
         const hasCompletedTasks = taskManager.tasks.some(t => t.completed);
         if (!hasCompletedTasks) {
-            errorHandler.showAlert('没有已完成的任务');
+            errorHandler.showAlert('There are no completed tasks to delete.');
             return;
         }
 
-        errorHandler.showConfirm('确定要删除所有已完成的任务吗？', async () => {
+        errorHandler.showConfirm('Are you sure you want to delete all completed tasks?', async () => {
             await taskManager.deleteCompletedTasks();
         });
     }
@@ -78,12 +78,12 @@ class PomodoroApp {
 
     startTimer() {
         if (this.isFocusPhase && !taskManager.getCurrentTask()) {
-            errorHandler.showAlert('请先选择一个任务');
+            errorHandler.showAlert('Please select a task first.');
             return;
         }
 
         if (this.isFocusPhase && taskManager.getCurrentTask().completed) {
-            errorHandler.showAlert('该任务已完成，无法启动番茄钟。请选择未完成的任务或创建新任务。');
+            errorHandler.showAlert('This task is already completed. Please select an incomplete task or create a new one.');
             return;
         }
 
@@ -164,7 +164,7 @@ class PomodoroApp {
 
     updatePhaseDisplay() {
         const phaseLabel = document.getElementById('phase-label');
-        phaseLabel.textContent = this.isFocusPhase ? '专注中' : '休息中';
+        phaseLabel.textContent = this.isFocusPhase ? 'Focusing' : 'Taking a Break';
         phaseLabel.className = `phase-label ${this.isFocusPhase ? 'focus' : 'break'}`;
     }
 
@@ -172,13 +172,13 @@ class PomodoroApp {
         const btn = document.getElementById('start-pause-btn');
         
         if (this.isRunning) {
-            btn.textContent = '暂停';
+            btn.textContent = 'Pause';
             btn.className = 'px-8 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full font-medium transition-all duration-300';
         } else if (this.isPaused) {
-            btn.textContent = this.isFocusPhase ? '继续专注' : '继续休息';
+            btn.textContent = this.isFocusPhase ? 'Continue Focus' : 'Continue Break';
             btn.className = 'px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-full font-medium transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5';
         } else {
-            btn.textContent = this.isFocusPhase ? '开始专注' : '开始休息';
+            btn.textContent = this.isFocusPhase ? 'Start Focus' : 'Start Break';
             btn.className = 'px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-full font-medium transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5';
         }
     }
@@ -207,7 +207,7 @@ class PomodoroApp {
         const title = titleInput.value.trim();
         
         if (!title) {
-            errorHandler.showAlert('请输入任务标题');
+            errorHandler.showAlert('Please enter a task title');
             return;
         }
         
