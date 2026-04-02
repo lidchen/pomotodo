@@ -131,7 +131,7 @@ class AuthService {
             return {
                 success: false,
                 errorcode: 500,
-                message: error.message || 'Failed to connect to server, please ensure the backend service is running',
+                message: error.message || 'Fail to connect to server, please ensure the backend service is running',
                 id: null,
                 username: null
             };

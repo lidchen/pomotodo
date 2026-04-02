@@ -30,7 +30,7 @@ class TaskManager {
             this.renderTasks();
             return this.tasks;
         } catch (error) {
-            errorHandler.showAlert(error.message || '加载任务失败');
+            errorHandler.showAlert(error.message || 'failed to load tasks');
             return [];
         }
     }
@@ -45,7 +45,7 @@ class TaskManager {
                 this.renderTasks();
                 return true;
             } else {
-                errorHandler.showAlert(data.message || '创建任务失败');
+                errorHandler.showAlert(data.message || 'failed to create task');
                 return false;
             }
         } catch (error) {
@@ -66,7 +66,7 @@ class TaskManager {
                 this.renderTasks();
                 return true;
             } else {
-                errorHandler.showAlert(data.message || '删除任务失败');
+                errorHandler.showAlert(data.message || 'failed to delete task');
                 return false;
             }
         } catch (error) {
@@ -90,7 +90,7 @@ class TaskManager {
                 this.renderTasks();
                 return true;
             } else {
-                errorHandler.showAlert(data.message || '切换任务状态失败');
+                errorHandler.showAlert(data.message || 'failed to toggle task status');
                 return false;
             }
         } catch (error) {
@@ -102,7 +102,7 @@ class TaskManager {
     async incrementTomatoes(taskId) {
         const task = this.tasks.find(t => t.id === taskId);
         if (task && task.completed) {
-            errorHandler.showAlert('该任务已完成，无法增加番茄数。');
+            errorHandler.showAlert('The task is already completed, you cannot increment the tomato count.');
             return false;
         }
 
@@ -114,7 +114,7 @@ class TaskManager {
                 this.renderTasks();
                 return true;
             } else {
-                errorHandler.showAlert(data.message || '增加番茄数失败');
+                errorHandler.showAlert(data.message || 'failed to increment tomato count');
                 return false;
             }
         } catch (error) {
@@ -135,7 +135,7 @@ class TaskManager {
                 this.renderTasks();
                 return true;
             } else {
-                errorHandler.showAlert(data.message || '更新任务标题失败');
+                errorHandler.showAlert(data.message || 'failed to update task title');
                 return false;
             }
         } catch (error) {
@@ -159,7 +159,7 @@ class TaskManager {
                 this.renderTasks();
                 return true;
             } else {
-                errorHandler.showAlert(data.message || '删除已完成任务失败');
+                errorHandler.showAlert(data.message || 'failed to delete completed tasks');
                 return false;
             }
         } catch (error) {
@@ -171,7 +171,7 @@ class TaskManager {
     selectTask(taskId) {
         const task = this.tasks.find(t => t.id === taskId);
         if (task && task.completed) {
-            errorHandler.showAlert('该任务已完成，无法选择。请选择未完成的任务或创建新任务。');
+            errorHandler.showAlert('The task is already completed, you cannot select it. Please choose an incomplete task or create a new one.');
             return;
         }
         this.currentTaskId = taskId;
@@ -189,7 +189,7 @@ class TaskManager {
         if (task) {
             currentTaskTitle.textContent = task.title;
         } else {
-            currentTaskTitle.textContent = '选择或创建一个任务开始专注';
+            currentTaskTitle.textContent = 'Select or create a task to start focusing';
         }
     }
 
@@ -238,12 +238,12 @@ class TaskManager {
                             <span class="text-sm text-gray-400 flex items-center gap-1">
                                 🍅 ${task.pomo_count}
                             </span>
-                            ${task.completed ? '<span class="text-sm text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded">已完成</span>' : ''}
+                            ${task.completed ? '<span class="text-sm text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded">Completed</span>' : ''}
                             <button class="task-edit-btn text-sm text-gray-400 hover:text-amber-500 transition-colors duration-300" data-task-id="${task.id}">
-                                编辑
+                                Edit
                             </button>
                             <button class="task-delete-btn text-sm text-gray-400 hover:text-red-500 transition-colors duration-300" data-task-id="${task.id}">
-                                删除
+                                Delete
                             </button>
                         </div>
                     </div>
@@ -261,7 +261,7 @@ class TaskManager {
                 !e.target.closest('.task-delete-btn') &&
                 !e.target.closest('.task-edit-btn')) {
                 if (task.completed) {
-                    errorHandler.showAlert('该任务已完成，无法选择。请选择未完成的任务或创建新任务。');
+                    errorHandler.showAlert('The task is already completed, you cannot select it. Please choose an incomplete task or create a new one.');
                 } else {
                     this.selectTask(task.id);
                 }
@@ -285,7 +285,7 @@ class TaskManager {
         const deleteBtn = taskElement.querySelector('.task-delete-btn');
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            errorHandler.showConfirm('确定要删除这个任务吗？', () => {
+            errorHandler.showConfirm('Are you sure you want to delete this task?', () => {
                 this.deleteTask(task.id);
             });
         });
@@ -313,7 +313,7 @@ class TaskManager {
         const newTitle = titleInput.value.trim();
         
         if (!newTitle) {
-            errorHandler.showAlert('请输入任务标题');
+            errorHandler.showAlert('Please enter a task title');
             return;
         }
         
