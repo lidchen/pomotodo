@@ -1,6 +1,6 @@
 class PomodoroApp {
     constructor() {
-        this.FOCUS_DURATION = 5;
+        this.FOCUS_DURATION = 10;
         this.BREAK_DURATION = 5;
         
         this.isRunning = false;
@@ -12,7 +12,8 @@ class PomodoroApp {
         this.init();
     }
 
-    init() {
+    async init() {
+        await soundManager.init();
         this.attachEvents();
         this.updateTimerDisplay();
         this.updatePhaseDisplay();
@@ -87,6 +88,7 @@ class PomodoroApp {
             return;
         }
 
+        soundManager.playDing();
         this.isRunning = true;
         this.isPaused = false;
         this.updateStartPauseButton();
@@ -114,6 +116,8 @@ class PomodoroApp {
 
     async completePhase() {
         this.pauseTimer();
+        
+        soundManager.playDoubleDing();
         
         if (this.isFocusPhase) {
             const currentTask = taskManager.getCurrentTask();
