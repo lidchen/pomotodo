@@ -1,6 +1,7 @@
 # Pomotodo
 
 Pomotodo is a simple pomodoro-style task app with user authentication, task management, and focus/break timer support.
+The web app is deployed on a server and can be accessed at http://48.210.66.163/pomotodo/.
 
 The project is split into two parts:
 
@@ -39,6 +40,7 @@ Backend flow:
 ### Frontend
 
 The frontend lives in [frontend/app/](frontend/app) and is a static browser app.
+It uses responsive CSS so the interface works across desktop, tablet, and mobile devices.
 
 Main responsibilities:
 
