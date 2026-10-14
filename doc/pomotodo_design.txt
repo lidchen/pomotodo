@@ -1,0 +1,38 @@
+基础功能：
+1.番茄钟 -》 专注
+2.todo
+3.用户登录
+
+
+
+数据：
+用户库:
+id(key)
+name(unique) passwd
+
+todo：
+USERID 2
+todoid 1
+order 1
+name
+finished
+poromodo count
+
+
+
+
+
+未来：
+番茄时长修改
+未注册用户存储在localStorage
+密码加密
+任务排序
+
+
+开发流程
+1用户登录静态
+2番茄todo静态页面
+3数据库
+4.设计接口并测试 
+5.动态页面
+6.检查测试
